@@ -49,6 +49,8 @@ public class ClassParser {
 				return Integer.class;
 			case "string":
 				return String.class;
+			case "java.lang.string":
+				return String.class;
 			case "object":
 				return Object.class;
 			default: 

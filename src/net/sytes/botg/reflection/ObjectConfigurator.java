@@ -87,7 +87,10 @@ public class ObjectConfigurator {
 	public static Object castPropertyValue(String dataType, String propertyValue) throws ConfigException {
 		Class<?> dataTypeClass = null;
 		try {
-			dataTypeClass = Class.forName(dataType);
+			dataTypeClass = ClassParser.parseStringClass(dataType);
+			if (dataTypeClass == null) {
+				dataTypeClass = Class.forName(dataType);
+			}
 		} catch (ClassNotFoundException e) {
 			throw new ConfigException("unkown class " + dataType + ", cannot instantiate object of this class");
 		}
