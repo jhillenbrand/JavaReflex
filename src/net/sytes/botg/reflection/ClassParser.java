@@ -47,6 +47,8 @@ public class ClassParser {
 				return int.class;
 			case "integer":
 				return Integer.class;
+			case "long":
+				return long.class;
 			case "string":
 				return String.class;
 			case "java.lang.string":
