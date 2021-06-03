@@ -29,7 +29,7 @@ public class ConfigOptionParser {
 	 */
 	public static Map<String, Object> getConfigOptionMap(Object object) throws ConfigOptionException {
 		Map<String, Object> configOptionMap = new HashMap<String, Object>();
-		List<Field> configFields = getConfigOptions(object);
+		List<Field> configFields = getConfigOptions(object.getClass());
 		for (Field field : configFields) {
 			try {
 				Object fieldValue = ObjectConfigurator.getObjectProperty(object, field.getName());
@@ -46,17 +46,16 @@ public class ConfigOptionParser {
 	 * @param object
 	 * @return
 	 */
-	private static List<Field> getConfigOptions(Object object) {
+	private static List<Field> getConfigOptions(Class<?> clazz) throws ConfigOptionException {
 		List<Field> configFields = new ArrayList<Field>();
-		for(Field field : object.getClass().getDeclaredFields()){
+		for(Field field : clazz.getDeclaredFields()){
 			if (isConfigOption(field)) {
 				configFields.add(field);
 			}
 		}
-		for(Field field : object.getClass().getDeclaredFields()){
-			if (isConfigOption(field)) {
-				configFields.add(field);
-			}
+		if (clazz.getSuperclass() != null) {
+			List<Field> moreConfigFields = getConfigOptions(clazz.getSuperclass());
+			configFields.addAll(moreConfigFields);
 		}
 		return configFields;
 	}
