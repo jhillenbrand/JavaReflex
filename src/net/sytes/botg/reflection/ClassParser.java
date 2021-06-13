@@ -35,6 +35,8 @@ public class ClassParser {
 	
 	public static Class<?> parseStringClass(String classStr){
 		switch (classStr.toLowerCase()) {
+			case "boolean":
+				return boolean.class;
 			case "byte":
 				return byte[].class;
 			case "byte[]":
