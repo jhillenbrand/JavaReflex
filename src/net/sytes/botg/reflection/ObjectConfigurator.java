@@ -4,6 +4,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -59,7 +60,7 @@ public class ObjectConfigurator {
 	 */
 	public static void configure(Object object, Map<String, String> configMap, Class[] enumClasses) throws ConfigException {
 		// go through properties of object through reflection and set them using properties stored within configMap
-		Field[] fields = object.getClass().getDeclaredFields();
+		List<Field> fields = ClassParser.getFields(object.getClass());
 		for (Field field : fields) {
 			String propertyValue = configMap.get(field.getName());
 			if (propertyValue != null) {

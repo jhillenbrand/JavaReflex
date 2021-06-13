@@ -1,6 +1,9 @@
 package net.sytes.botg.reflection;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import net.sytes.botg.reflection.ObjectConfigurator.ConfigException;
 
@@ -31,6 +34,16 @@ public class ClassParser {
 				return getField(superClass, fieldName);
 			}
 		}
+	}
+	
+	public static List<Field> getFields(Class<?> clazz) {
+		List<Field> fieldList = new ArrayList<Field>();
+		Field[] fields = clazz.getDeclaredFields();
+		fieldList.addAll(Arrays.asList(fields));
+		if (clazz.getSuperclass() != Object.class & clazz.getSuperclass() != null) {
+			fieldList.addAll(getFields(clazz.getSuperclass()));
+		}
+		return fieldList;
 	}
 	
 	public static Class<?> parseStringClass(String classStr){
