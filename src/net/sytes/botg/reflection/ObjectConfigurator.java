@@ -1,8 +1,6 @@
 package net.sytes.botg.reflection;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -219,21 +217,6 @@ public class ObjectConfigurator {
 		} catch (ClassNotFoundException e) {
 			throw new ConfigException(e.getMessage());
 		}
-	}
-	
-	private boolean isFieldArray(Object object, String fieldName) throws ConfigException {
-		try {
-			return object.getClass().getDeclaredField(fieldName).getType().isArray();
-		} catch (NoSuchFieldException e) {
-			throw new ConfigException(e.getMessage());
-		} catch (SecurityException e) {
-			throw new ConfigException(e.getMessage());
-		}
-	}
-	
-	private boolean isFieldList() {
-		// TODO Not implemented
-		return false;
 	}
 	
 	public static class ConfigException extends Exception {
