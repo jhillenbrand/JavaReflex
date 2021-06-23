@@ -10,8 +10,6 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import sun.misc.Unsafe;
-
 public class ObjectConfigurator {
 	
 	private static final Logger logger = LoggerFactory.getLogger(ObjectConfigurator.class);
@@ -222,14 +220,6 @@ public class ObjectConfigurator {
 			throw new ConfigException(e.getMessage());
 		}
 	}
-
-	private static Enum<?> createEnumInstance(Class<?> enumClass) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-		Constructor<?> constructor = Unsafe.class.getDeclaredConstructors()[0];
-	    constructor.setAccessible(true);
-	    Unsafe unsafe = (Unsafe) constructor.newInstance();
-	    Enum<?> enumValue = (Enum<?>) unsafe.allocateInstance(enumClass);
-		return enumValue;
-	}
 	
 	private boolean isFieldArray(Object object, String fieldName) throws ConfigException {
 		try {
@@ -242,6 +232,7 @@ public class ObjectConfigurator {
 	}
 	
 	private boolean isFieldList() {
+		// TODO Not implemented
 		return false;
 	}
 	

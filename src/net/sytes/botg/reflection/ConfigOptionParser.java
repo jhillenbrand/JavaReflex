@@ -16,7 +16,7 @@ public class ConfigOptionParser {
 	 * @return
 	 * @throws ConfigOptionException
 	 */
-	public static String getAdapterConfigString(Object object) throws ConfigOptionException{
+	public static String getConfigString(Object object) throws ConfigOptionException{
 		Map<String, Object> configOptionMap = getConfigOptionMap(object);
 		return convertMapToNameValuePairString(configOptionMap, ";");
 	}

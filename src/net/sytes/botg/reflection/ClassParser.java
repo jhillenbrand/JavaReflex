@@ -5,8 +5,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import net.sytes.botg.reflection.ObjectConfigurator.ConfigException;
-
 public class ClassParser {
 
 	//private static final Logger logger = LoggerFactory.getLogger(ClassParser.class);
