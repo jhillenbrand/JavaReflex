@@ -48,26 +48,50 @@ public class ClassParser {
 		switch (classStr.toLowerCase()) {
 			case "boolean":
 				return boolean.class;
+			case "boolean[]":
+				return boolean[].class;
 			case "byte":
 				return byte[].class;
+			case "int8":
+				return byte.class;
 			case "byte[]":
 				return byte[].class;
+			case "short":
+				return short.class;
+			case "int16":
+				return short.class;
+			case "short[]":
+				return short[].class;
+			case "float":
+				return float.class;
+			case "float[]":
+				return float[].class;
 			case "double":
 				return double.class;
 			case "double[]":
 				return Double[].class;
 			case "int":
 				return int.class;
+			case "int32":
+				return int.class;
+			case "int[]":
+				return int[].class;
 			case "integer":
 				return Integer.class;
 			case "long":
 				return long.class;
+			case "long[]":
+				return long[].class;
 			case "string":
 				return String.class;
+			case "string[]":
+				return String[].class;
 			case "java.lang.string":
 				return String.class;
 			case "object":
 				return Object.class;
+			case "object[]":
+				return Object[].class;
 			default: 
 				return null;
 		}
