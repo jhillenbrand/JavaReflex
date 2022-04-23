@@ -1,4 +1,4 @@
-# JavaReflex
+# JavaReflex (not up-to-date)
 current release branch v0.1_release
 ## Documentation
 JavaReflex is a wrapper class for reflection functionalities in Java such as
