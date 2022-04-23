@@ -1,4 +1,4 @@
-package net.sytes.botg.reflection;
+package net.sytes.botg.configuration;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

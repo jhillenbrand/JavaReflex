@@ -1,12 +1,13 @@
-package net.sytes.botg.reflection;
+package net.sytes.botg.configuration;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import net.sytes.botg.reflection.ObjectConfigurator.ConfigException;
+import net.sytes.botg.reflection.JFlex;
+import net.sytes.botg.reflection.JFlex.JFlexException;
 
 public class ConfigOptionParser {
 
@@ -28,15 +29,25 @@ public class ConfigOptionParser {
 	 * @throws ConfigOptionException
 	 */
 	public static Map<String, Object> getConfigOptionMap(Object object) throws ConfigOptionException {
-		Map<String, Object> configOptionMap = new HashMap<String, Object>();
+		Map<String, Object> configOptionMap = new LinkedHashMap<String, Object>();
 		List<Field> configFields = getConfigOptions(object.getClass());
 		for (Field field : configFields) {
 			try {
-				Object fieldValue = ObjectConfigurator.getObjectProperty(object, field.getName());
+				Object fieldValue = JFlex.getObjectProperty(object, field.getName());
 				configOptionMap.put(field.getName(), fieldValue);
-			} catch (ConfigException e) {
+			} catch (JFlexException e) {
 				throw new ConfigOptionException(e.getMessage());
 			}
+		}
+		return configOptionMap;
+	}
+	
+	public static Map<String, String> getConfigOptionTypeMap(Object object) throws ConfigOptionException {
+		Map<String, String> configOptionMap = new LinkedHashMap<String, String>();
+		List<Field> configFields = getConfigOptions(object.getClass());
+		for (Field field : configFields) {
+			String c = field.getType().getSimpleName();
+			configOptionMap.put(field.getName(), c);
 		}
 		return configOptionMap;
 	}
