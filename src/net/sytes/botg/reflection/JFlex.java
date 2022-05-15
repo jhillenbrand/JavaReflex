@@ -530,7 +530,7 @@ public class JFlex {
 			try {
 				return Class.forName(classStr).newInstance();
 			} catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
-				throw new JFlexException("Could not create object for " + classStr + "\n" + e.getMessage());
+				throw new JFlexException("Could not create object for " + classStr + "\n\t" + e.getMessage());
 			}
 		} else {
 			throw new JFlexException("No string was specified");
