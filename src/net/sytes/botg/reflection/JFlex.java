@@ -109,7 +109,7 @@ public class JFlex {
 	 * @return
 	 * @throws MyGatewayBuilderException
 	 */
-	public static boolean setObjectProperty(Object object, Field field,  String propertyValue, Class<?>[] enumClasses) throws JFlexException {
+	public static boolean setObjectProperty(Object object, Field field, String propertyValue, Class<?>[] enumClasses) throws JFlexException {
 		try {	
 			JFlex.setFieldValue(object, field.getName(), castPropertyValue(field.getType().getName(), propertyValue, enumClasses));
 			return true;
@@ -128,6 +128,17 @@ public class JFlex {
 			// TODO Auto-generated catch block
         	logger.error(e.getMessage(), e);
 			throw new JFlexException("Error while configuring Object " + object.getClass().getName() + " [" + field.getName() + "=" + propertyValue + "] using Reflection");
+		}
+	}
+	
+	public static boolean setObjectProperty2(Object object, String field,  Object propertyValue, Class<?>[] enumClasses) throws JFlexException {
+		try {	
+			JFlex.setFieldValue(object, field, castPropertyValue2(propertyValue, enumClasses));
+			return true;
+        } catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException e) {
+			// TODO Auto-generated catch block
+        	logger.error(e.getMessage(), e);
+			throw new JFlexException("Error while configuring Object " + object.getClass().getName() + " [" + field + "=" + propertyValue + "] using Reflection");
 		}
 	}
 	
@@ -318,7 +329,7 @@ public class JFlex {
 		Field field = getField(object.getClass(), fieldName);
 		field.setAccessible(true);
 		
-		// check if Double have to be converted to long or int
+		// check if Double has to be converted to long or int
 		if (field.getType().equals(long.class)) {
 			long l = ((Double) fieldValue).longValue();
 			field.set(object, l);
@@ -408,6 +419,8 @@ public class JFlex {
 			case "byte[]":
 				return byte[].class;
 			case "short":
+				return short.class;
+			case "java.lang.short":
 				return short.class;
 			case "int16":
 				return short.class;
