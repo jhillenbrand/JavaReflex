@@ -1,15 +1,25 @@
 package net.sytes.botg.reflection;
 
+import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.ServiceConfigurationError;
+import java.util.ServiceLoader;
 import java.util.Set;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -99,6 +109,102 @@ public class JFlex {
 	}
 	
 
+	/**
+	 * create a Map of all available Class Instances based classesToLoad that can be found in classpath
+	 * @param <E>
+	 * @return
+	 */
+	public static Map<String, Object> makeAll(List<Class> classesToMake){
+		Map<String, Object> instances = new LinkedHashMap<String, Object>();
+		for (Class<?> clazz : classesToMake) {
+			try {
+				Object instance = clazz.newInstance();
+				instances.put(clazz.getName(), instance);
+			} catch (InstantiationException e) {
+				logger.error("Could not create " + clazz.getName(), e);
+			} catch (IllegalAccessException e) {
+				logger.error("Could not access " + clazz.getName(), e);
+			} 
+		}
+		return instances;
+	}
+	
+	public static <T> Map<String, T> makeAllTypes(List<Class> classesToMake){
+		Map<String, T> instances = new LinkedHashMap<String, T>();
+		for (Class<?> clazz : classesToMake) {
+			try {
+				T instance = (T) clazz.newInstance();
+				instances.put(clazz.getName(), instance);
+			} catch (InstantiationException e) {
+				logger.error("Could not create " + clazz.getName(), e);
+			} catch (IllegalAccessException e) {
+				logger.error("Could not access " + clazz.getName(), e);
+			} 
+		}
+		return instances;
+	}
+	
+	public static List<Class> findClassesWithParentClass(Class<?> parentClass) throws ClassNotFoundException, IOException {
+		List<Class> classes = findClassesInPackage("");
+		List<Class> classesWithParent = new ArrayList<Class>();
+		for (Class c : classes) {
+			if (JFlex.hasSuperClass(c, parentClass)){
+				classesWithParent.add(c);
+			}
+		}
+		return classesWithParent;
+	}
+	
+	public static List<Class> findClassesWithInterface(Class<?> interfaceClass) throws IOException {
+		List<Class> classes = findClassesInPackage("");
+		List<Class> classesWithInterface = new ArrayList<Class>();
+		for (Class c : classes) {
+			if (JFlex.implementsInterface(c, interfaceClass)){
+				classesWithInterface.add(c);
+			}
+		}
+		return classesWithInterface;
+	}
+	
+	/**
+    * Scans all classes accessible from the context class loader which belong
+    * to the given package and sub packages. Adapted from
+    * http://snippets.dzone.com/posts/show/4831 and extended to support use of
+    * JAR files
+    * 
+    * @param packageName The base package
+    * @return The classes
+	 * @throws ClassNotFoundException 
+	 * @throws IOException 
+	 * @throws Exception
+    */
+	public static List<Class> findClassesInPackage(String packageName) throws IOException {
+		String path = packageName.replace(".", "/");
+		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+		List<String> classes = new ArrayList<String>();
+		List<Class> classList = new ArrayList<Class>();       
+		if (classLoader != null) {
+			Enumeration<URL> resources = classLoader.getResources(path);
+			List<String> dirs = new ArrayList<String>();
+			while (resources.hasMoreElements()) {
+				URL resource = resources.nextElement();
+				dirs.add(resource.getFile());
+			}	       
+			for (String directory : dirs) {
+				classes.addAll(findClasses(directory, packageName));
+			}
+			for (String clazz : classes) {
+				try {
+					classList.add(Class.forName(clazz));
+				} catch (ClassNotFoundException e) {
+					logger.debug("Could not find class " + clazz, e);
+				} catch (NoClassDefFoundError e) {
+					logger.debug("Could not find class " + clazz, e);
+				}
+			}
+		}
+		return classList;
+	}
 	
 	/**
 	 * set a property of gatewayObject by fieldname=property with propertyValue 
@@ -563,7 +669,65 @@ public class JFlex {
 	private boolean isFieldList() {
 		// TODO Not implemented
 		return false;
-	}	
+	}
+	
+   /**
+	* Recursive method used to find all classes in a given directory and
+	* subdirs. Adapted from http://snippets.dzone.com/posts/show/4831 and
+	* extended to support use of JAR files
+	* 
+	* @param directory The base directory
+	* @param packageName The package name for classes found inside the base
+	*            directory
+	* @return The classes
+	* @throws IOException 
+	*/
+   	private static List<String> findClasses(String directory, String packageName) throws IOException {
+       List<String> classes = new ArrayList<String>();
+       if (directory.startsWith("file:") && directory.contains("!")) {
+           String[] split = directory.split("!");
+           URL jar = new URL(split[0]);
+           try (ZipInputStream zip = new ZipInputStream(jar.openStream())) {
+               ZipEntry entry = null;
+               while ((entry = zip.getNextEntry()) != null) {
+                   if (entry.getName().endsWith(".class")) {
+                       String className = entry.getName()
+                               .replaceAll("[$].*", "")
+                               .replaceAll("[.]class", "")
+                               .replace("/", ".");
+                       if (className.startsWith(packageName)) {
+                           classes.add(className);
+                       }
+                   }
+               }
+           }
+       }
+       File dir = new File(directory);
+       if (!dir.exists()) {
+           return classes;
+       }
+       File[] files = dir.listFiles();
+       if (files != null) {
+           for (File file : files) {
+               if (file.isDirectory()) {
+                   if(!file.getName().contains(".")) {
+                	   String subPackage;
+                	   if (packageName == "") {
+                		   subPackage = file.getName();
+                	   } else {
+                		   subPackage = packageName + "." + file.getName();
+                	   }
+                	   classes.addAll(findClasses(file.getAbsolutePath(), subPackage));
+                   }
+               } else if (file.getName().endsWith(".class")) {
+                   String cn = packageName + "." + file.getName().substring(0, file.getName().length() - 6);
+            	   classes.add(cn);
+               }
+           }
+       }
+
+       return classes;
+   	}
 	
 	public static class JFlexException extends Exception {
 		
