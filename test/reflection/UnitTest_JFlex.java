@@ -9,7 +9,7 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 import net.sytes.botg.datatypes.ValueInterface;
-import net.sytes.botg.datatypes.buffers.TimeSeriesBuffer;
+import net.sytes.botg.datatypes.buffers.TimedBuffer;
 import net.sytes.botg.reflection.JFlex;
 
 public class UnitTest_JFlex {
@@ -29,7 +29,7 @@ public class UnitTest_JFlex {
 	
 	@Test
 	public void test020() throws ClassNotFoundException, IOException {		
-		List<Class> clazzes = JFlex.findClassesWithParentClass(TimeSeriesBuffer.class);		
+		List<Class> clazzes = JFlex.findClassesWithParentClass(TimedBuffer.class);		
 		System.out.println(clazzes);		
 	}
 	
