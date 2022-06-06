@@ -2,7 +2,9 @@ package net.sytes.botg.reflection;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.ArrayList;
@@ -651,6 +653,30 @@ public class JFlex {
 		} else {
 			throw new JFlexException("No string was specified");
 		}
+	}
+	
+	public static Object createObject(String classStr, Class<?>[] constructorArgClasses, Object[] args) throws JFlexException {
+		try {
+			Class<?> objClass = Class.forName(classStr);
+			Constructor<?> co = objClass.getConstructor(constructorArgClasses);
+			Object obj = co.newInstance(args);
+			return obj;
+		} catch (ClassNotFoundException e) {
+			throw new JFlexException("Could not create Class for " + classStr + "\n\t" + e.getMessage());
+		} catch (NoSuchMethodException e) {
+			throw new JFlexException("Could not create Class Constructor for " + Arrays.toString(constructorArgClasses) + "\n\t" + e.getMessage());
+		} catch (SecurityException e) {
+			throw new JFlexException("Could not create Class Constructor for " + Arrays.toString(constructorArgClasses) + "\n\t" + e.getMessage());
+		} catch (InstantiationException e) {
+			throw new JFlexException("Could not create Object with Constructor for " + Arrays.toString(args) + "\n\t" + e.getMessage());
+		} catch (IllegalAccessException e) {
+			throw new JFlexException("Could not create Object with Constructor for " + Arrays.toString(args) + "\n\t" + e.getMessage());
+		} catch (IllegalArgumentException e) {
+			throw new JFlexException("Could not create Object with Constructor for " + Arrays.toString(args) + "\n\t" + e.getMessage());
+		} catch (InvocationTargetException e) {
+			throw new JFlexException("Could not create Object with Constructor for " + Arrays.toString(args) + "\n\t" + e.getMessage());
+		}
+		
 	}
 	
 	private boolean isFieldArray(Object object, String fieldName) throws JFlexException {
